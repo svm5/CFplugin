@@ -24,6 +24,31 @@ function activate(context) {
 		vscode.window.showInformationMessage('Hello World from CFplugin!');
 	});
 
+	const editor = vscode.window.activeTextEditor;
+	let path = vscode.window.activeTextEditor.document.uri.path;
+    const index = path.lastIndexOf('/'); 
+	path = path.slice(1, index + 1);
+	const filename = editor.document.fileName;
+	const selected_text = editor.selection;
+	
+	const text = editor.document.getText(selected_text);
+	// const reverse = text.split('').reverse().join('') + " " + path + " " + filename;
+
+	let options = {
+		mode: 'text',
+		pythonOptions: ['-u'],
+		scriptPath: '', // Path to script
+		args: [text, path]  // arguments
+	   };
+	
+	let {PythonShell} = require('python-shell')
+
+	PythonShell.run(__dirname + '/cf_parser.py', options, function (err, result){
+		if (err) throw err;
+		console.log('result: ', result.toString());
+		res.send(result.toString())
+    });
+
 	context.subscriptions.push(disposable);
 }
 
