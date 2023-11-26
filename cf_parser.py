@@ -20,10 +20,18 @@ def parse_task(url, index, path):
         problem_statement = soup.find("div", class_="problem-statement")
         header = problem_statement.find("div", class_="header")
         title = header.find("div", class_="title").text
-        time_limit = header.find("div", class_="time-limit").text
-        memory_limit = header.find("div", class_="memory-limit").text
-        input_file = header.find("div", class_="input-file").text
-        output_file = header.find("div", class_="output-file").text
+
+        time_limit_block = header.find("div", class_="time-limit")
+        time_limit = "Time limit: " + "".join(time_limit_block.find_all(string=True, recursive=False))
+
+        memory_limit_block = header.find("div", class_="memory-limit")
+        memory_limit = "Memory limit: " + "".join(memory_limit_block.find_all(string=True, recursive=False))
+
+        input_file_block = header.find("div", class_="input-file")
+        input_file = "Input: " + "".join(input_file_block.find_all(string=True, recursive=False))
+
+        output_file_block = header.find("div", class_="output-file")
+        output_file = "Output: " + "".join(output_file_block.find_all(string=True, recursive=False))
 
         # print(title)
         # print(time_limit)
@@ -37,14 +45,35 @@ def parse_task(url, index, path):
         task_text = ""
         for i in range(len(list_task_text)):
             task_text += list_task_text[i]
-            if (i + 1) % 20 == 0:
+            if (i + 1) % 15 == 0:
                 task_text += "\n"
             else:
                 task_text += " "
         # print(task_text)
 
-        input = problem_statement.find("div", class_="input-specification").text
-        output = problem_statement.find("div", class_="output-specification").text
+        input_block = problem_statement.find("div", class_="input-specification")
+        input = "Input:\n"
+        input_list = input_block.find_all(string=True, recursive=True)
+        for i in range(1, len(input_list)):
+            input += input_list[i] + " "
+        splited_input = input.split()
+        input = "Input:\n"
+        for i in range(1, len(splited_input)):
+            if i % 15 == 0:
+                input += "\n"
+            input += splited_input[i] + " "
+
+        output_block = problem_statement.find("div", class_="output-specification")
+        output = "Output\n"
+        output_list = output_block.find_all(string=True, recursive=True)
+        for i in range(1, len(output_list)):
+            output += output_list[i] + " "
+        splited_output = output.split()
+        output = "Output:\n"
+        for i in range(1, len(splited_output)):
+            if i % 15 == 0:
+                output += "\n"
+            output += splited_output[i] + " "
 
         test = problem_statement.find("div", class_="sample-test")
         test_divs = test.find_all("div")
@@ -67,7 +96,17 @@ def parse_task(url, index, path):
         # print(output)
         # print(test)
 
-        note = problem_statement.find("div", class_="note").text
+        note_block = problem_statement.find("div", class_="output-specification")
+        note = "Note\n"
+        note_list = note_block.find_all(string=True, recursive=True)
+        for i in range(1, len(note_list)):
+            note += note_list[i] + " "
+        splited_note = note.split()
+        note = "Node:\n"
+        for i in range(1, len(splited_note)):
+            if i % 15 == 0:
+                note += "\n"
+            note += splited_note[i] + " "
         # print(note)
 
         # path = os.path.join(save_path, "contest")
@@ -79,9 +118,9 @@ def parse_task(url, index, path):
             f.write(time_limit + "\n")
             f.write(memory_limit + "\n")
             f.write(input_file + "\n")
-            f.write(output_file + "\n")
-            f.write(task_text + "\n")
-            f.write(input + "\n")
+            f.write(output_file + "\n\n")
+            f.write(task_text + "\n\n")
+            f.write(input + "\n\n")
             f.write(output + "\n")
             f.write(test + "\n")
             f.write(note + "\n")
@@ -121,6 +160,7 @@ def parse_contest(link, path):
 
 
 if __name__ == "__main__":
+    # parse_task("https://codeforces.net/contest/1898/problem/A", 0, "D:/itmo/devtools/cfplugin/cfplugin/contest")
     data = json.loads(sys.argv[1])
     link = data["link"]
     path = data["save"]
