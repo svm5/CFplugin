@@ -14,8 +14,15 @@
   "contributes": {
     "commands": [
       {
-        "command": "cfplugin.helloWorld",
-        "title": "Hello World"
+        "command": "cfplugin.cfRound",
+        "suggested_key": "CTRL+SHIFT+3",
+        "title": "Codeforces round"
+      }
+    ],
+    "keybindings": [
+      {
+          "command": "cfplugin.cfRound",
+          "key": "ctrl+shift+3"
       }
     ]
   },
