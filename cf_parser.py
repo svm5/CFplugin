@@ -1,9 +1,8 @@
 import os
 import sys #You will get input from node in sys.argv(list)
-import logging
 import time
-import requests
 import json
+import requests
 
 from bs4 import BeautifulSoup
 
@@ -33,12 +32,6 @@ def parse_task(url, index, path):
         output_file_block = header.find("div", class_="output-file")
         output_file = "Output: " + "".join(output_file_block.find_all(string=True, recursive=False))
 
-        # print(title)
-        # print(time_limit)
-        # print(memory_limit)
-        # print(input_file)
-        # print(output_file)
-
         divs = problem_statement.find_all("div")
         task_text = divs[10].text
         list_task_text = task_text.split()
@@ -49,7 +42,6 @@ def parse_task(url, index, path):
                 task_text += "\n"
             else:
                 task_text += " "
-        # print(task_text)
 
         input_block = problem_statement.find("div", class_="input-specification")
         input = "Input:\n"
@@ -82,19 +74,11 @@ def parse_task(url, index, path):
         if test_divs[1].text == "Input" and test_divs[2].text[:6] != "Output":
             start_index = 1
             
-        # for i in range(len(test_divs) - 1):
-        #     if test_divs[i].text[:5] == "Input" and test_divs[i + 1].text != "Output":
-        #         start_index = i
-
         for i in range(start_index, len(test_divs) - 1):
             if test_divs[i].text == "Output":
                 test += "\n"
             test += test_divs[i].text
             test += "\n"
-
-        # print(input)
-        # print(output)
-        # print(test)
 
         note_block = problem_statement.find("div", class_="output-specification")
         note = "Note\n"
@@ -102,15 +86,11 @@ def parse_task(url, index, path):
         for i in range(1, len(note_list)):
             note += note_list[i] + " "
         splited_note = note.split()
-        note = "Node:\n"
+        note = "Note:\n"
         for i in range(1, len(splited_note)):
             if i % 15 == 0:
                 note += "\n"
             note += splited_note[i] + " "
-        # print(note)
-
-        # path = os.path.join(save_path, "contest")
-        # path = os.path.join("D:/itmo/devtools/cfplugin/cfplugin/", "contest")
 
         task_filename = path + "/task_" + chr(ord('A') + index) + ".txt"
         with open(task_filename, "w") as f:
@@ -121,7 +101,7 @@ def parse_task(url, index, path):
             f.write(output_file + "\n\n")
             f.write(task_text + "\n\n")
             f.write(input + "\n\n")
-            f.write(output + "\n")
+            f.write(output + "\n\n")
             f.write(test + "\n")
             f.write(note + "\n")
 
@@ -147,7 +127,8 @@ def parse_contest(link, path):
         try:  
             os.mkdir(path)  
         except OSError as error:  
-            logging.error(error)
+            # logging.error(error)
+            return "Cannot create directory"
         soup = BeautifulSoup(page.text, 'html.parser')
         tasks = soup.find("div", class_="datatable")
         table = tasks.find("table", class_="problems")
@@ -160,40 +141,9 @@ def parse_contest(link, path):
 
 
 if __name__ == "__main__":
-    # parse_task("https://codeforces.net/contest/1898/problem/A", 0, "D:/itmo/devtools/cfplugin/cfplugin/contest")
     data = json.loads(sys.argv[1])
     link = data["link"]
     path = data["save"]
     message = parse_contest(link, path)
-    # message = "Not link"
-    # if (res):
-    #     message = "Ok"
     newdata = {'answer': message}
     print(json.dumps(newdata)) 
-# print("begin")
-# # parse_contest()
-
-# print("OK")
-    # parse_task("https://codeforces.net/contest/1898/problem/A", 0)
-    # logs = open("D:/itmo/devtools/plugin_again/easy-translator/logs.txt", "w")
-    # print(sys.argv[1], file=logs)
-    # print(sys.argv[2], file=logs)
-
-    # path = os.path.join(sys.argv[2], "constest")
-    # print(path, file=logs)
-    # try:  
-    #     os.mkdir(path)  
-    # except OSError as error:  
-    #     print(error, file=logs)
-    #     logging.error(error)
-
-    # logs.close()
-
-    # with open(path + "/tasks.txt", "w") as f:
-    #     f.write("Hello!")
-    # print("Here...!")
-    # # print(sys.argv)
-    # j = json.loads(sys.argv[1]) #sys.argv[0] is filename
-    # print(j)
-    # add_two(20000, 5000) #I make this function just to check 
-# So for all print done here you will get a list for all print in node, here-> console.log(i, "---->", typeof i)

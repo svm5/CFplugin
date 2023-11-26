@@ -31,26 +31,23 @@ function activate(context) {
 		const selected_text = editor.selection;
 		
 		const text = editor.document.getText(selected_text);
-		// const reverse = text.split('').reverse().join('') + " " + path + " " + filename;
+
 		const spawn = require('child_process').spawn; 
 		const data = { 
 			link: text,
 			save: path 
 		}
 
-		let stringifiedData = JSON.stringify(data); 
-		const py = spawn('python', [__dirname + '/cf_parser.py', stringifiedData]); 
-		resultString = ''; 
-		py.stdout.on('data', function (stdData) { 
-			resultString += stdData.toString(); 
+		let stringified_data = JSON.stringify(data); 
+		const py = spawn('python', [__dirname + '/cf_parser.py', stringified_data]); 
+		result_string = ''; 
+		py.stdout.on('data', function (std_data) { 
+			result_string += std_data.toString(); 
 		});
 		py.stdout.on('end', function () { 
-  
-			// Parse the string as JSON when stdout 
-			// data stream ends 
-			let resultData = JSON.parse(resultString); 
+			let result_data = JSON.parse(result_string); 
 			
-			let answer = resultData['answer']; 
+			let answer = result_data['answer']; 
 			if (answer == "Ok") {
 				vscode.window.showInformationMessage('Successfully!');
 			}
@@ -59,24 +56,6 @@ function activate(context) {
 			}
 			console.log('Answer =', answer); 
 		  });
-		// let options = {
-		// 	// mode: 'text',
-		// 	// pythonOptions: ['-u'],
-		// 	scriptPath: '', // Path to script
-		// 	args: [text, path]  // arguments
-		// };
-		
-		// let {PythonShell} = require('python-shell')
-
-		// PythonShell.run(__dirname + '/cf_parser.py', options, function (err, result){
-		// 	// if (err) console.log(err);
-		// 	console.log(err);
-
-		// 	// if (result) console.log('result: ', result);
-		// 	// res.send(result.toString())
-		// 	console.log('result: ', result);
-		// });
-
 	});
 
 	context.subscriptions.push(disposable);
