@@ -101,7 +101,7 @@ def parse_contest(link, path):
     try:
         page = requests.get(link, headers=headers)
     except Exception as e:
-        return False
+        return "Incorrect link"
     
     if page.text:
         path = os.path.join(path, "contest")
@@ -117,17 +117,17 @@ def parse_contest(link, path):
             letter = chr(ord('A') + i - 1)
             parse_task(link + "problem/" + letter, i - 1, path)
 
-    return True
+    return "Ok"
 
 
 if __name__ == "__main__":
     data = json.loads(sys.argv[1])
     link = data["link"]
     path = data["save"]
-    res = parse_contest(link, path)
-    message = "Not link"
-    if (res):
-        message = "Ok"
+    message = parse_contest(link, path)
+    # message = "Not link"
+    # if (res):
+    #     message = "Ok"
     newdata = {'answer': message}
     print(json.dumps(newdata)) 
 # print("begin")

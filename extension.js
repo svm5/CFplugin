@@ -17,7 +17,7 @@ function activate(context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('cfplugin.helloWorld', function () {
+	let disposable = vscode.commands.registerCommand('cfplugin.cfRound', function () {
 		// The code you place here will be executed every time your command is executed
 
 		// Display a message box to the user
@@ -54,8 +54,8 @@ function activate(context) {
 			if (answer == "Ok") {
 				vscode.window.showInformationMessage('Successfully!');
 			}
-			else if (answer == "Not link") {
-				vscode.window.showInformationMessage('Select a link, please');
+			else if (answer == "Incorrect link") {
+				vscode.window.showInformationMessage('Select correct link, please');
 			}
 			console.log('Answer =', answer); 
 		  });
