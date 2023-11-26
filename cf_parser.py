@@ -3,6 +3,7 @@ import sys #You will get input from node in sys.argv(list)
 import logging
 import time
 import requests
+import json
 
 from bs4 import BeautifulSoup
 
@@ -11,7 +12,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0'
 }
 
-def parse_task(url, index):
+def parse_task(url, index, path):
     page = requests.get(url, headers=headers)
     if page.text:
 
@@ -24,11 +25,11 @@ def parse_task(url, index):
         input_file = header.find("div", class_="input-file").text
         output_file = header.find("div", class_="output-file").text
 
-        print(title)
-        print(time_limit)
-        print(memory_limit)
-        print(input_file)
-        print(output_file)
+        # print(title)
+        # print(time_limit)
+        # print(memory_limit)
+        # print(input_file)
+        # print(output_file)
 
         divs = problem_statement.find_all("div")
         task_text = divs[10].text
@@ -40,21 +41,37 @@ def parse_task(url, index):
                 task_text += "\n"
             else:
                 task_text += " "
-        print(task_text)
+        # print(task_text)
 
         input = problem_statement.find("div", class_="input-specification").text
         output = problem_statement.find("div", class_="output-specification").text
 
-        test = problem_statement.find("div", class_="sample-test").text
+        test = problem_statement.find("div", class_="sample-test")
+        test_divs = test.find_all("div")
+        test = ""
+        start_index = 0
+        if test_divs[1].text == "Input" and test_divs[2].text[:6] != "Output":
+            start_index = 1
+            
+        # for i in range(len(test_divs) - 1):
+        #     if test_divs[i].text[:5] == "Input" and test_divs[i + 1].text != "Output":
+        #         start_index = i
 
-        print(input)
-        print(output)
-        print(test)
+        for i in range(start_index, len(test_divs) - 1):
+            if test_divs[i].text == "Output":
+                test += "\n"
+            test += test_divs[i].text
+            test += "\n"
+
+        # print(input)
+        # print(output)
+        # print(test)
 
         note = problem_statement.find("div", class_="note").text
-        print(note)
+        # print(note)
 
-        path = os.path.join(sys.argv[2], "constest")
+        # path = os.path.join(save_path, "contest")
+        # path = os.path.join("D:/itmo/devtools/cfplugin/cfplugin/", "contest")
 
         task_filename = path + "/task_" + chr(ord('A') + index) + ".txt"
         with open(task_filename, "w") as f:
@@ -80,11 +97,14 @@ def parse_task(url, index):
         time.sleep(5)
 
 
-def parse_contest():
-    link = sys.argv[1]
-    page = requests.get(link, headers=headers)
+def parse_contest(link, path):
+    try:
+        page = requests.get(link, headers=headers)
+    except Exception as e:
+        return False
+    
     if page.text:
-        path = os.path.join(sys.argv[2], "constest")
+        path = os.path.join(path, "contest")
         try:  
             os.mkdir(path)  
         except OSError as error:  
@@ -95,10 +115,25 @@ def parse_contest():
         trs = table.find_all("tr")
         for i in range(1, len(trs)):
             letter = chr(ord('A') + i - 1)
-            parse_task(link + "problem/" + letter, i - 1)
+            parse_task(link + "problem/" + letter, i - 1, path)
+
+    return True
+
 
 if __name__ == "__main__":
-    parse_contest()
+    data = json.loads(sys.argv[1])
+    link = data["link"]
+    path = data["save"]
+    res = parse_contest(link, path)
+    message = "Not link"
+    if (res):
+        message = "Ok"
+    newdata = {'answer': message}
+    print(json.dumps(newdata)) 
+# print("begin")
+# # parse_contest()
+
+# print("OK")
     # parse_task("https://codeforces.net/contest/1898/problem/A", 0)
     # logs = open("D:/itmo/devtools/plugin_again/easy-translator/logs.txt", "w")
     # print(sys.argv[1], file=logs)
