@@ -26,7 +26,7 @@ function activate(context) {
 		const editor = vscode.window.activeTextEditor;
 		let path = vscode.window.activeTextEditor.document.uri.path;
 		const index = path.lastIndexOf('/'); 
-		path = path.slice(1, index + 1);
+		path = path.slice(1, index + 1);  
 		const filename = editor.document.fileName;
 		const selected_text = editor.selection;
 		
@@ -53,6 +53,12 @@ function activate(context) {
 			}
 			else if (answer == "Incorrect link") {
 				vscode.window.showInformationMessage('Select correct link, please');
+			}
+			else if (answer == "Cannot open this page") {
+				vscode.window.showInformationMessage('Error: cannot open this page');
+			}
+			else if (answer == "exists") {
+				vscode.window.showInformationMessage("Directory contest already exists");
 			}
 			console.log('Answer =', answer); 
 		  });
